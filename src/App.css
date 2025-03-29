@@ -1,0 +1,17 @@
+.App {
+  display: flex;
+  height: 100vh; /* Altura completa */
+  width: 100%; /* Asegura que ocupa todo el ancho */
+}
+
+.main-content {
+  flex: 1; /* Ocupa el espacio restante */
+  overflow-y: auto; /* Permite desplazamiento vertical si es necesario */
+  width: 100%; /* Asegura que ocupa el 100% del ancho disponible */
+}
+.demo-logo-vertical {
+  height: 32px;
+  background: rgba(255, 255, 255, 0.2);
+  margin: 16px;
+}
+

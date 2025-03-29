@@ -1,0 +1,86 @@
+/* Contenedor principal */
+.insumos-container {
+    padding: 20px;
+    background-color: #f0f8ff; /* Fondo azul claro */
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+}
+
+/* Título */
+.insumos-container h2 {
+    text-align: center;
+    color: #0056b3; /* Azul oscuro */
+    margin-bottom: 20px;
+}
+
+/* Input de búsqueda */
+.insumos-container input {
+    width: 100%;
+    max-width: 400px;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 20px;
+}
+
+/* Botones */
+.ant-btn-primary {
+    background-color: #007bff; /* Azul principal */
+    border-color: #007bff;
+}
+
+.ant-btn-primary:hover {
+    background-color: #0056b3; /* Azul oscuro */
+    border-color: #0056b3;
+}
+
+.ant-btn-danger {
+    background-color: #ff4d4f; /* Rojo para eliminar */
+    border-color: #ff4d4f;
+}
+
+.ant-btn-danger:hover {
+    background-color: #d9363e;
+}
+
+/* Tabla */
+.ant-table {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.ant-table-thead > tr > th {
+    background-color: #007bff;
+    color: white;
+    text-align: center;
+    font-weight: bold;
+}
+
+.ant-table-tbody > tr:nth-child(odd) {
+    background-color: #f0f8ff;
+}
+
+.ant-table-tbody > tr:nth-child(even) {
+    background-color: white;
+}
+/* Contenedor del encabezado (búsqueda + botón) */
+.insumos-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+
+/* Mantiene la tabla bien distribuida */
+.ant-table {
+    margin-top: 20px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+/* Mantiene el scroll visible */
+.ant-table-tbody {
+    overflow-y: auto;
+}

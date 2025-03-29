@@ -1,0 +1,79 @@
+.custom-navbar {
+    width: 250px; /* Ancho del navbar */
+    height: 100vh; /* Mantiene la altura para ocupar toda la pantalla */
+    background: #001529; /* Color de fondo del navbar */
+    transition: all 0.3s ease; /* Transición suave */
+    display: flex;
+    flex-direction: column; /* Alinea los elementos verticalmente */
+    position: fixed; /* Fija el navbar en el lado izquierdo */
+    left: 0; /* Alineado al borde izquierdo */
+    top: 0; /* Comienza desde la parte superior */
+}
+
+.custom-navbar.closed {
+    width: 64px; /* Ancho del navbar cuando está cerrado */
+}
+
+.navbar-header {
+    display: flex;
+    justify-content: space-between; /* Espacio entre título y botón */
+    align-items: center; /* Centra verticalmente */
+    padding: 10px; /* Espaciado interno */
+}
+
+.navbar-title {
+    color: white; /* Color del título */
+    margin: 0; /* Elimina márgenes */
+    font-size: 20px; /* Tamaño de fuente del título */
+    flex: 1; /* Permite que el título use el espacio disponible */
+    text-align: center; /* Centra el texto */
+    transition: opacity 0.3s ease; /* Transición suave para la opacidad */
+}
+
+.custom-navbar.closed .navbar-title {
+    opacity: 0; /* Oculta el título cuando está cerrado */
+}
+
+.toggle-button {
+    color: white; /* Color del ícono */
+    border: none; /* Sin borde */
+    background: transparent; /* Fondo transparente */
+    font-size: 24px; /* Tamaño del ícono */
+    cursor: pointer; /* Cambiar cursor a pointer */
+    margin-top: auto; /* Empuja el botón al final del navbar */
+}
+
+/* Ajustar el menú */
+.navbar-menu {
+    margin: 0; /* Sin margen */
+    padding: 0; /* Sin padding */
+}
+
+.navbar-menu .ant-menu-item {
+    color: white; /* Color del texto de los ítems */
+    padding: 10px 15px; /* Espaciado interno */
+}
+
+.navbar-menu .ant-menu-item:hover {
+    background-color: #003140; /* Color de fondo en hover */
+}
+
+.navbar-menu .ant-menu-submenu {
+    background-color: #001529; /* Fondo del submenú */
+}
+
+/* Estilo para el submenú */
+.submenu {
+    background-color: #003140; /* Color de fondo del submenú */
+    padding-left: 20px; /* Espaciado izquierdo */
+    border-radius: 5px; /* Bordes redondeados */
+}
+
+.submenu .ant-menu-item {
+    padding: 10px 15px; /* Espaciado interno */
+    color: white; /* Color del texto */
+}
+
+.submenu .ant-menu-item:hover {
+    background-color: #005f70; /* Color de fondo en hover */
+}

@@ -1,0 +1,68 @@
+/* Modal de Insumos: centrado y con el ancho del 80% */
+.ant-modal {
+  z-index: 2000 !important;
+}
+
+.ant-modal-content {
+  z-index: 2000 !important;
+  width: 100% !important; /* Modal de insumos ocupa el 80% */
+  max-width: 1200px; /* Limitar el tamaño máximo si se necesita */
+  margin: 0 auto !important; /* Centrar el modal */
+}
+
+/* Modal de Cantidad: más pequeño (30% de ancho) */
+.ant-modal-content.quantity-modal {
+  width: 30% !important;
+}
+
+/* Centrar los textos en "Total Gramos" y "Ingredientes Agregados" */
+.recetas-container h3 {
+  text-align: center;
+  color: #0056b3;
+}
+
+/* Tabla y otros estilos */
+.ant-table-wrapper {
+  margin-top: 20px;
+  overflow-y: auto;
+}
+
+.ant-table {
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.ant-table-thead > tr > th {
+  background-color: #007bff;
+  color: white;
+  text-align: center;
+}
+
+.ant-table-tbody > tr:nth-child(odd) {
+  background-color: #f0f8ff;
+}
+
+.ant-table-tbody > tr:nth-child(even) {
+  background-color: #ffffff;
+}
+
+/* Botones */
+.ant-btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+.ant-btn-primary:hover {
+  background-color: #0056b3;
+  border-color: #0056b3;
+}
+
+.ant-btn-danger {
+  background-color: #ff4d4f;
+  border-color: #ff4d4f;
+}
+
+.ant-btn-danger:hover {
+  background-color: #d9363e;
+  border-color: #d9363e;
+}
