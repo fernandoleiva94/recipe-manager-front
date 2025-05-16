@@ -1,23 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Input, Table, Button, Form, InputNumber, message, Modal } from 'antd';
-import axiosInstance from '../Axios'; // Asegúrate de que la ruta sea correcta
-import './FormularioReceta.css'; // Estilos personalizados
+import { Input, Table, Button, Form, InputNumber, message, Modal, Select } from 'antd';
+import axiosInstance from '../Axios';
+import './FormularioReceta.css';
+
+const { Option } = Select;
 
 const Recetas = () => {
     const [ingredients, setIngredients] = useState([]);
     const [filteredIngredients, setFilteredIngredients] = useState([]);
     const [searchTerm, setSearchTerm] = useState('');
-    const [selectedIngredient, setSelectedIngredient] = useState(null); // Ingrediente seleccionado
-    const [quantity, setQuantity] = useState(''); // Cantidad ingresada
-    const [isModalVisible, setIsModalVisible] = useState(false); // Modal para seleccionar insumos
-    const [isQuantityModalVisible, setIsQuantityModalVisible] = useState(false); // Modal para ingresar cantidad
+    const [selectedIngredient, setSelectedIngredient] = useState(null);
+    const [quantity, setQuantity] = useState('');
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [isQuantityModalVisible, setIsQuantityModalVisible] = useState(false);
+
     const [recipe, setRecipe] = useState({
         name: '',
+        unit: '',
+        quantity: '',
+        description: '',
         ingredients: []
     });
-    const [totalGrams, setTotalGrams] = useState(0);
-    const [finalWeight, setFinalWeight] = useState('');
-    const [portions, setPortions] = useState('');
 
     useEffect(() => {
         fetchIngredients();
@@ -29,7 +32,7 @@ const Recetas = () => {
                 setIngredients(response.data);
                 setFilteredIngredients(response.data);
             })
-            .catch(error => message.error('Error fetching ingredients'));
+            .catch(() => message.error('Error al obtener ingredientes'));
     };
 
     const handleSearch = (e) => {
@@ -41,81 +44,68 @@ const Recetas = () => {
         setFilteredIngredients(filtered);
     };
 
-    const showModal = () => {
-        setIsModalVisible(true); // Mostrar modal con la tabla de insumos
-    };
+    const showModal = () => setIsModalVisible(true);
 
     const handleSelectIngredient = (ingredient) => {
-        setSelectedIngredient(ingredient); // Guardamos el ingrediente seleccionado
-        setIsModalVisible(false); // Cerrar el modal de selección de insumos
-        setIsQuantityModalVisible(true); // Mostrar el modal de cantidad
+        setSelectedIngredient(ingredient);
+        setIsModalVisible(false);
+        setIsQuantityModalVisible(true);
     };
 
     const handleAddIngredient = () => {
-        // Validar que haya un ingrediente seleccionado y una cantidad ingresada
         if (!selectedIngredient || !quantity) {
             message.error('Por favor selecciona un ingrediente y una cantidad');
-            return; // Salir si no se ha seleccionado el ingrediente o cantidad
+            return;
         }
 
-        const existingIngredient = recipe.ingredients.find(ingredient => ingredient.id === selectedIngredient.id);
-
-        const addIngredient = () => {
-            const cost = ((selectedIngredient.price / selectedIngredient.quantity) * quantity).toFixed(2); // Formato a 2 decimales
-            const newIngredient = { ...selectedIngredient, quantity, cost };
-
-            // Si el ingrediente ya está, lo reemplaza
-            if (existingIngredient) {
-                setRecipe(prevState => ({
-                    ...prevState,
-                    ingredients: prevState.ingredients.map(ingredient =>
-                        ingredient.id === newIngredient.id ? newIngredient : ingredient
-                    )
-                }));
-            } else {
-                setRecipe(prevState => ({
-                    ...prevState,
-                    ingredients: [...prevState.ingredients, newIngredient]
-                }));
-            }
-
-            if (selectedIngredient.unit === 'gr') {
-                setTotalGrams(prevGrams => prevGrams + parseFloat(quantity));
-            }
-
-            setSelectedIngredient(null); // Limpiar selección
-            setQuantity(''); // Resetear cantidad
-            setIsQuantityModalVisible(false); // Cerrar el modal de cantidad
+        const existing = recipe.ingredients.find(i => i.id === selectedIngredient.id);
+        const costKg = (selectedIngredient.price / selectedIngredient.quantity).toFixed(2);
+        const newIngredient = {
+            ...selectedIngredient,
+            quantity,
+            cost: (costKg * quantity).toFixed(2),
+            costKg: parseFloat(costKg)
         };
 
-        addIngredient();
+        setRecipe(prev => ({
+            ...prev,
+            ingredients: existing
+                ? prev.ingredients.map(i => i.id === newIngredient.id ? newIngredient : i)
+                : [...prev.ingredients, newIngredient]
+        }));
+
+        setSelectedIngredient(null);
+        setQuantity('');
+        setIsQuantityModalVisible(false);
     };
 
     const handleModalCancel = () => {
-        setIsModalVisible(false); // Cerrar el modal de insumos
-        setSelectedIngredient(null); // Limpiar selección
-        setQuantity(''); // Resetear cantidad
+        setIsModalVisible(false);
+        setSelectedIngredient(null);
+        setQuantity('');
     };
 
     const handleRemoveIngredient = (id) => {
-        setRecipe(prevState => ({
-            ...prevState,
-            ingredients: prevState.ingredients.filter(ingredient => ingredient.id !== id)
+        setRecipe(prev => ({
+            ...prev,
+            ingredients: prev.ingredients.filter(i => i.id !== id)
         }));
     };
 
     const handleSubmit = () => {
-        const costTotal = recipe.ingredients.reduce((total, ingredient) => total + parseFloat(ingredient.cost), 0).toFixed(2); // Formato a 2 decimales
+        const costTotal = recipe.ingredients.reduce((sum, ing) => sum + parseFloat(ing.cost), 0).toFixed(2);
 
         const postData = {
             name: recipe.name,
-            portion: portions,
-            weightFinal: finalWeight,
-            costTotal: costTotal,
-            recipeSuppliesDto: recipe.ingredients.map(ingredient => ({
-                supplyId: ingredient.id,
-                quantity: ingredient.quantity                
-            })) 
+            unit: recipe.unit,
+            quantity: recipe.quantity,
+            costTotal: parseFloat(costTotal),
+            description: recipe.description || '',
+            ingredients: recipe.ingredients.map(i => ({
+                supplyId: i.id,
+                quantity: i.quantity,
+                costKg: i.costKg
+            }))
         };
 
         axiosInstance.post('/api/recipes', postData)
@@ -123,22 +113,27 @@ const Recetas = () => {
                 message.success('Receta guardada');
                 resetForm();
             })
-            .catch(error => message.error('Error al guardar la receta'));
+            .catch(() => message.error('Error al guardar la receta'));
     };
 
     const resetForm = () => {
-        setRecipe({ name: '', ingredients: [] });
+        setRecipe({
+            name: '',
+            unit: '',
+            quantity: '',
+            description: '',
+            ingredients: []
+        });
         setSelectedIngredient(null);
         setQuantity('');
-        setTotalGrams(0);
-        setFinalWeight('');
-        setPortions('');
     };
+
+    const isFormValid = recipe.name && recipe.unit && recipe.quantity && recipe.ingredients.length > 0;
 
     const ingredientColumns = [
         { title: 'Nombre', dataIndex: 'name', key: 'name' },
         { title: 'Unidad', dataIndex: 'unit', key: 'unit' },
-        { title: 'Precio', dataIndex: 'price', key: 'price', render: (text) => parseFloat(text).toFixed(2) },
+        { title: 'Precio', dataIndex: 'price', key: 'price', render: text => parseFloat(text).toFixed(2) },
         { title: 'Cantidad', dataIndex: 'quantity', key: 'quantity' },
         {
             title: 'Seleccionar',
@@ -153,14 +148,12 @@ const Recetas = () => {
         { title: 'Ingrediente', dataIndex: 'name', key: 'name' },
         { title: 'Cantidad', dataIndex: 'quantity', key: 'quantity' },
         { title: 'Unidad', dataIndex: 'unit', key: 'unit' },
-        { title: 'Costo', dataIndex: 'cost', key: 'cost', render: (text) => parseFloat(text).toFixed(2) },
+        { title: 'Costo', dataIndex: 'cost', key: 'cost', render: text => parseFloat(text).toFixed(2) },
         {
             title: 'Acción',
             key: 'action',
             render: (_, record) => (
-                <Button type="danger" onClick={() => handleRemoveIngredient(record.id)}>
-                    Eliminar
-                </Button>
+                <Button type="danger" onClick={() => handleRemoveIngredient(record.id)}>Eliminar</Button>
             )
         }
     ];
@@ -169,6 +162,7 @@ const Recetas = () => {
         <div className="recetas-container">
             <Form layout="vertical" onFinish={handleSubmit}>
                 <h2>Crear Receta</h2>
+
                 <Form.Item label="Nombre de la Receta" required>
                     <Input
                         value={recipe.name}
@@ -176,20 +170,37 @@ const Recetas = () => {
                         style={{ width: '30%' }}
                     />
                 </Form.Item>
-                <Form.Item label="Peso Final Cocido (gramos)">
+
+                <Form.Item label="Unidad" required>
+                    <Select
+                        value={recipe.unit}
+                        onChange={value => setRecipe({ ...recipe, unit: value })}
+                        placeholder="Selecciona unidad"
+                        style={{ width: '30%' }}
+                    >
+                        <Option value="gr">Gramos</Option>
+                        <Option value="ml">Mililitros</Option>
+                        <Option value="unidad">Unidad</Option>
+                    </Select>
+                </Form.Item>
+
+                <Form.Item label="Cantidad Total" required>
                     <InputNumber
-                        value={finalWeight}
-                        onChange={value => setFinalWeight(value)}
-                        placeholder="Ingresa el peso final cocido"
+                        value={recipe.quantity}
+                        onChange={value => setRecipe({ ...recipe, quantity: value })}
+                        placeholder="Cantidad total de la receta"
+                        min={1}
                         style={{ width: '30%' }}
                     />
                 </Form.Item>
-                <Form.Item label="Número de Porciones">
-                    <InputNumber
-                        value={portions}
-                        onChange={value => setPortions(value)}
-                        placeholder="Ingresa el número de porciones"
-                        style={{ width: '30%' }}
+
+                <Form.Item label="Descripción (opcional)">
+                    <Input.TextArea
+                        value={recipe.description}
+                        onChange={e => setRecipe({ ...recipe, description: e.target.value })}
+                        rows={4}
+                        maxLength={500}
+                        style={{ width: '60%' }}
                     />
                 </Form.Item>
 
@@ -197,13 +208,17 @@ const Recetas = () => {
                     Seleccionar Ingredientes
                 </Button>
 
-                <Button type="primary" htmlType="submit" style={{ marginTop: '20px' }}>
+                <Button
+                    type="primary"
+                    htmlType="submit"
+                    style={{ marginTop: '20px', marginLeft: '20px' }}
+                    disabled={!isFormValid}
+                >
                     Guardar Receta
                 </Button>
             </Form>
 
             <div style={{ textAlign: 'center' }}>
-                <h3>Total Gramos: {totalGrams.toFixed(2)} gr</h3>
                 <h3>Ingredientes Agregados</h3>
             </div>
 
@@ -216,13 +231,13 @@ const Recetas = () => {
                 style={{ margin: '0 auto', width: '80%' }}
             />
 
-            {/* Modal de Selección de Ingredientes */}
+            {/* Modal Selección Ingrediente */}
             <Modal
                 title="Seleccionar Ingrediente"
                 visible={isModalVisible}
                 onOk={handleAddIngredient}
                 onCancel={handleModalCancel}
-                width="100%" // Ancho del modal de insumos (más grande)
+                width="100%"
             >
                 <Form.Item label="Buscar Ingrediente">
                     <Input
@@ -237,17 +252,17 @@ const Recetas = () => {
                     dataSource={filteredIngredients}
                     rowKey="id"
                     pagination={false}
-                    scroll={{ y: 200 }} // 5 registros visibles y luego scroll
+                    scroll={{ y: 200 }}
                 />
             </Modal>
 
-            {/* Modal de Cantidad */}
+            {/* Modal Cantidad Ingrediente */}
             <Modal
                 title="Cantidad"
-                visible={isQuantityModalVisible} // Controlar la visibilidad del modal de cantidad
+                visible={isQuantityModalVisible}
                 onOk={handleAddIngredient}
                 onCancel={() => setIsQuantityModalVisible(false)}
-                width="10%" // Modal más pequeño
+                width="20%"
             >
                 <Form.Item label="Cantidad">
                     <InputNumber
