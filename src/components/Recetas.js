@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Input, Table, Button, Form, InputNumber, message, Modal, Select } from 'antd';
+import { Input, Table, Button, Form, InputNumber, message, Modal, Select, Row, Col, Typography, Space } from 'antd';
+import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import axiosInstance from '../Axios';
 import './FormularioReceta.css';
 
 const { Option } = Select;
+const { Title } = Typography;
 
 const Recetas = () => {
     const [ingredients, setIngredients] = useState([]);
@@ -54,7 +56,7 @@ const Recetas = () => {
 
     const handleAddIngredient = () => {
         if (!selectedIngredient || !quantity) {
-            message.error('Por favor selecciona un ingrediente y una cantidad');
+            message.warning('Por favor selecciona un ingrediente y una cantidad');
             return;
         }
 
@@ -110,7 +112,7 @@ const Recetas = () => {
 
         axiosInstance.post('/api/recipes', postData)
             .then(() => {
-                message.success('Receta guardada');
+                message.success('Receta guardada con éxito');
                 resetForm();
             })
             .catch(() => message.error('Error al guardar la receta'));
@@ -134,12 +136,14 @@ const Recetas = () => {
         { title: 'Nombre', dataIndex: 'name', key: 'name' },
         { title: 'Unidad', dataIndex: 'unit', key: 'unit' },
         { title: 'Precio', dataIndex: 'price', key: 'price', render: text => parseFloat(text).toFixed(2) },
-        { title: 'Cantidad', dataIndex: 'quantity', key: 'quantity' },
+        { title: 'Stock', dataIndex: 'quantity', key: 'quantity' },
         {
-            title: 'Seleccionar',
+            title: 'Acción',
             key: 'select',
             render: (_, record) => (
-                <Button type="primary" onClick={() => handleSelectIngredient(record)}>Seleccionar</Button>
+                <Button type="link" icon={<PlusOutlined />} onClick={() => handleSelectIngredient(record)}>
+                    Agregar
+                </Button>
             )
         }
     ];
@@ -153,116 +157,125 @@ const Recetas = () => {
             title: 'Acción',
             key: 'action',
             render: (_, record) => (
-                <Button type="danger" onClick={() => handleRemoveIngredient(record.id)}>Eliminar</Button>
+                <Button danger type="link" icon={<DeleteOutlined />} onClick={() => handleRemoveIngredient(record.id)}>
+                    Eliminar
+                </Button>
             )
         }
     ];
 
     return (
         <div className="recetas-container">
-            <Form layout="vertical" onFinish={handleSubmit}>
-                <h2>Crear Receta</h2>
+            <Title level={3} style={{ textAlign: 'center' }}>Gestión de Recetas</Title>
+            <Row gutter={24}>
+                {/* Formulario de Receta */}
+                <Col xs={24} md={12}>
+                    <Form layout="vertical" onFinish={handleSubmit}>
+                        <Form.Item label="Nombre de la Receta" required>
+                            <Input
+                                value={recipe.name}
+                                onChange={e => setRecipe({ ...recipe, name: e.target.value })}
+                            />
+                        </Form.Item>
 
-                <Form.Item label="Nombre de la Receta" required>
-                    <Input
-                        value={recipe.name}
-                        onChange={e => setRecipe({ ...recipe, name: e.target.value })}
-                        style={{ width: '30%' }}
+                        <Form.Item label="Unidad" required>
+                            <Select
+                                value={recipe.unit}
+                                onChange={value => setRecipe({ ...recipe, unit: value })}
+                                placeholder="Selecciona unidad"
+                            >
+                                <Option value="gr">Gramos</Option>
+                                <Option value="ml">Mililitros</Option>
+                                <Option value="unidad">Unidad</Option>
+                            </Select>
+                        </Form.Item>
+
+                        <Form.Item label="Cantidad Total" required>
+                            <InputNumber
+                                value={recipe.quantity}
+                                onChange={value => setRecipe({ ...recipe, quantity: value })}
+                                min={1}
+                                style={{ width: '100%' }}
+                            />
+                        </Form.Item>
+
+                        <Form.Item label="Descripción (opcional)">
+                            <Input.TextArea
+                                value={recipe.description}
+                                onChange={e => setRecipe({ ...recipe, description: e.target.value })}
+                                rows={3}
+                                maxLength={500}
+                            />
+                        </Form.Item>
+
+                        <Space style={{ marginTop: 16 }}>
+                            <Button type="primary" onClick={showModal} icon={<PlusOutlined />}>
+                                Agregar Ingredientes
+                            </Button>
+
+                            <Button
+                                type="primary"
+                                htmlType="submit"
+                                disabled={!isFormValid}
+                            >
+                                Guardar Receta
+                            </Button>
+
+                            <Button onClick={resetForm}>
+                                Limpiar
+                            </Button>
+                        </Space>
+                    </Form>
+                </Col>
+
+                {/* Ingredientes Agregados */}
+                <Col xs={24} md={12}>
+                    <Title level={5}>Ingredientes en la Receta</Title>
+                    <Table
+                        columns={addedIngredientsColumns}
+                        dataSource={recipe.ingredients}
+                        rowKey="id"
+                        size="small"
+                        pagination={false}
+                        scroll={{ y: 300 }}
+                        bordered
                     />
-                </Form.Item>
+                </Col>
+            </Row>
 
-                <Form.Item label="Unidad" required>
-                    <Select
-                        value={recipe.unit}
-                        onChange={value => setRecipe({ ...recipe, unit: value })}
-                        placeholder="Selecciona unidad"
-                        style={{ width: '30%' }}
-                    >
-                        <Option value="gr">Gramos</Option>
-                        <Option value="ml">Mililitros</Option>
-                        <Option value="unidad">Unidad</Option>
-                    </Select>
-                </Form.Item>
-
-                <Form.Item label="Cantidad Total" required>
-                    <InputNumber
-                        value={recipe.quantity}
-                        onChange={value => setRecipe({ ...recipe, quantity: value })}
-                        placeholder="Cantidad total de la receta"
-                        min={1}
-                        style={{ width: '30%' }}
-                    />
-                </Form.Item>
-
-                <Form.Item label="Descripción (opcional)">
-                    <Input.TextArea
-                        value={recipe.description}
-                        onChange={e => setRecipe({ ...recipe, description: e.target.value })}
-                        rows={4}
-                        maxLength={500}
-                        style={{ width: '60%' }}
-                    />
-                </Form.Item>
-
-                <Button type="primary" onClick={showModal}>
-                    Seleccionar Ingredientes
-                </Button>
-
-                <Button
-                    type="primary"
-                    htmlType="submit"
-                    style={{ marginTop: '20px', marginLeft: '20px' }}
-                    disabled={!isFormValid}
-                >
-                    Guardar Receta
-                </Button>
-            </Form>
-
-            <div style={{ textAlign: 'center' }}>
-                <h3>Ingredientes Agregados</h3>
-            </div>
-
-            <Table
-                columns={addedIngredientsColumns}
-                dataSource={recipe.ingredients}
-                rowKey="id"
-                pagination={false}
-                scroll={{ y: 'calc(100vh - 500px)' }}
-                style={{ margin: '0 auto', width: '80%' }}
-            />
-
-            {/* Modal Selección Ingrediente */}
+            {/* Modal para seleccionar Ingredientes */}
             <Modal
                 title="Seleccionar Ingrediente"
                 visible={isModalVisible}
-                onOk={handleAddIngredient}
                 onCancel={handleModalCancel}
-                width="100%"
+                footer={null}
+                width="70%"
             >
-                <Form.Item label="Buscar Ingrediente">
-                    <Input
-                        value={searchTerm}
-                        onChange={handleSearch}
-                        placeholder="Busca un ingrediente"
-                    />
-                </Form.Item>
-
+                <Input
+                    value={searchTerm}
+                    onChange={handleSearch}
+                    placeholder="Busca un ingrediente"
+                    style={{ marginBottom: 12 }}
+                />
                 <Table
                     columns={ingredientColumns}
                     dataSource={filteredIngredients}
                     rowKey="id"
+                    size="small"
                     pagination={false}
-                    scroll={{ y: 200 }}
+                    scroll={{ y: 300 }}
                 />
             </Modal>
 
-            {/* Modal Cantidad Ingrediente */}
+            {/* Modal para ingresar cantidad */}
             <Modal
                 title="Cantidad"
                 visible={isQuantityModalVisible}
                 onOk={handleAddIngredient}
                 onCancel={() => setIsQuantityModalVisible(false)}
-                width="20%"
+                okText="Agregar"
+                cancelText="Cancelar"
+                centered
             >
                 <Form.Item label="Cantidad">
                     <InputNumber

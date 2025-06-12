@@ -16,7 +16,7 @@ const Categorias = () => {
   const fetchCategories = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:8080/api/categories");
+      const response = await axios.get("/api/categories");
       setCategories(response.data);
     } catch (error) {
       message.error("Error fetching categories");
@@ -27,10 +27,10 @@ const Categorias = () => {
   const handleAddOrUpdate = async (values) => {
     try {
       if (editingCategory) {
-        await axios.put(`http://localhost:8080/api/categories/${editingCategory.id}`, values);
+        await axios.put(`/api/categories/${editingCategory.id}`, values);
         message.success("Category updated successfully");
       } else {
-        await axios.post("http://localhost:8080/api/categories", values);
+        await axios.post("/api/categories", values);
         message.success("Category added successfully");
       }
       fetchCategories();
@@ -50,7 +50,7 @@ const Categorias = () => {
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:8080/api/categories/${id}`);
+      await axios.delete(`/api/categories/${id}`);
       message.success("Category deleted successfully");
       fetchCategories();
     } catch (error) {

@@ -3,6 +3,7 @@ import { Table, Input, Button, Space } from "antd";
 import { SearchOutlined, DownloadOutlined } from "@ant-design/icons";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import axiosInstance from "../Axios"; // Ajusta la ruta según tu estructura
 
 const PlatosListExport = () => {
   const [dishes, setDishes] = useState([]);
@@ -10,11 +11,14 @@ const PlatosListExport = () => {
   const [searchText, setSearchText] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/dishes")
-      .then((res) => res.json())
-      .then((data) => {
-        setDishes(data);
-        setFiltered(data);
+    axiosInstance
+      .get("/api/dishes")
+      .then((res) => {
+        setDishes(res.data);
+        setFiltered(res.data);
+      })
+      .catch((error) => {
+        console.error("Error al obtener los platos:", error);
       });
   }, []);
 
@@ -70,7 +74,11 @@ const PlatosListExport = () => {
           onChange={(e) => handleSearch(e.target.value)}
           prefix={<SearchOutlined />}
         />
-        <Button type="primary" icon={<DownloadOutlined />} onClick={exportToExcel}>
+        <Button
+          type="primary"
+          icon={<DownloadOutlined />}
+          onClick={exportToExcel}
+        >
           Exportar a Excel
         </Button>
       </Space>

@@ -76,17 +76,25 @@ const Insumos = () => {
 
     const handleDelete = (id) => {
         Modal.confirm({
-            title: '¿Estás seguro de eliminar este insumo?',
-            onOk: () => {
-                axiosInstance.delete(`/api/supplies/${id}`)
-                    .then(() => {
-                        fetchInsumos();
-                        message.success('Insumo eliminado.');
-                    })
-                    .catch(error => message.error('Error al eliminar el insumo.'));
-            }
+          title: '¿Estás seguro de eliminar este insumo?',
+          onOk: () => {
+            axiosInstance
+              .delete(`/api/supplies/${id}`)
+              .then(() => {
+                fetchInsumos();
+                message.success('Insumo eliminado.');
+              })
+              .catch(error => {
+                console.error('Error al eliminar el insumo:', error);
+                const errorMessage =
+                  error.response && error.response.data && error.response.data.message
+                    ? error.response.data.message
+                    : 'Error al elimnar el insumo, por favor reportelo.';
+                message.error(errorMessage);
+              });
+          }
         });
-    };
+      };
 
     const handleModalSubmit = () => {
         form.validateFields().then(values => {
