@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Table, Button, Modal, Form, Input, message } from "antd";
-import axios from '../Axios';
+import axios from '../util/RecipeAxios';
 
 const Categorias = () => {
   const [categories, setCategories] = useState([]);

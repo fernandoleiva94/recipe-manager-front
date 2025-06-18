@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Input, Button, Modal, Form, InputNumber, Select, message } from 'antd';
-import axiosInstance from '../Axios'; // Asegúrate de que la ruta sea correcta
+import axiosInstance from '../util/RecipeAxios'; // Asegúrate de que la ruta sea correcta
 import './FormularioInsumo.css'; // Estilo personalizado para Insumos
 
 const { Option } = Select;

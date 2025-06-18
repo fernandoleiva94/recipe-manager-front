@@ -12,6 +12,9 @@ import {
 } from "antd";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+import axiosInstance from '../util/SubscriptionsAxios';
+import axiosInstanceUser from '../util/UserAxios';
+
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -36,19 +39,14 @@ const UserProfile = () => {
 
     const fetchData = async () => {
       try {
-        const personResponse = await axios.get(
-          `http://localhost:8081/api/people/${userId}`
+        const personResponse = await axiosInstanceUser.get(
+          `/api/people/${userId}`
         );
         setUserData(personResponse.data);
         form.setFieldsValue(personResponse.data);
 
-        const subscriptionResponse = await axios.get(
-          "http://localhost:8083/api/subscriptions/user",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+        const subscriptionResponse = await axiosInstance.get(
+          "/api/subscriptions/user"
         );
 
         const activePlan = subscriptionResponse.data.find((sub) => sub.active);
@@ -69,8 +67,8 @@ const UserProfile = () => {
       const decodedToken = jwtDecode(token);
       const userId = decodedToken.id;
 
-      await axios.put(
-        `http://localhost:8081/api/people/${userId}`,
+      await axiosInstanceUser.put(
+        `/api/people/${userId}`,
         {
           ...userData,
           ...values,

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Table, Button, message, Input } from "antd";
-import axiosInstance from "../Axios";
+import axiosInstance from "../util/RecipeAxios";
 import EditRecipe from "./EditRecipe";
 
 const RecetasList = () => {

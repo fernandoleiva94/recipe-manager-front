@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Input, Table, Button, Form, InputNumber, message, Modal, Select, Row, Col, Typography, Space } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
-import axiosInstance from '../Axios';
+import axiosInstance from '../util/RecipeAxios';
 import './FormularioReceta.css';
 
 const { Option } = Select;

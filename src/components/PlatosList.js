@@ -14,7 +14,7 @@ import {
   Spin,
 } from "antd";
 import { DeleteOutlined, SearchOutlined } from "@ant-design/icons";
-import axiosInstance from "../Axios";
+import axiosInstance from "../util/RecipeAxios";
 
 const { Title, Text } = Typography;
 

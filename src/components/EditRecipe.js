@@ -11,7 +11,7 @@ import {
   Divider,
   List
 } from "antd";
-import axiosInstance from "../Axios";
+import axiosInstance from "../util/RecipeAxios";
 
 const EditRecipe = ({ recipeId, visible, onClose }) => {
   const [form] = Form.useForm();

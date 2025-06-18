@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Input, Button, Table, Modal, InputNumber, message, Form } from 'antd';
-import axiosInstance from '../Axios';
+import axiosInstance from '../util/RecipeAxios';
 import './FormularioPlato.css';
 
 const Plato = () => {

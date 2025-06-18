@@ -3,7 +3,7 @@ import { Table, Input, Button, Space } from "antd";
 import { SearchOutlined, DownloadOutlined } from "@ant-design/icons";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
-import axiosInstance from "../Axios"; // Ajusta la ruta según tu estructura
+import axiosInstance from "../util/RecipeAxios"; // Ajusta la ruta según tu estructura
 
 const PlatosListExport = () => {
   const [dishes, setDishes] = useState([]);

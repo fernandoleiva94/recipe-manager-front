@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../../util/SubscriptionsAxios';
 
 
 const SubscriptionSuccess = () => {
@@ -15,8 +15,8 @@ const SubscriptionSuccess = () => {
     if (paymentId && planId) {
       const activateSubscription = async () => {
         try {
-          const response = await axios.post(
-            'http://localhost:8083/api/subscriptions',
+          const response = await axiosInstance.post(
+            '/api/subscriptions',
             { planId: parseInt(planId) },
             {
               headers: {

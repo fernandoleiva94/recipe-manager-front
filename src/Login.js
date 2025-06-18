@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Form, Input, Button, Typography, message } from "antd";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from './util/AuthAxios';
 import { AuthContext } from "./AuthContext";
 import "./Login.css";
 import logo from "./img/logo.png";
@@ -15,7 +15,7 @@ const Login = () => {
 
   const onFinish = async (values) => {
     try {
-      const response = await axios.post("http://localhost:8082/v1/auth/login", values);
+      const response = await axiosInstance.post("/v1/auth/login", values);
       login(response.data.token);
       message.success("Inicio de sesión exitoso");
       navigate("/dashboard");

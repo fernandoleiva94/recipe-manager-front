@@ -1,9 +1,11 @@
 // Axios.js (o donde configures axiosInstance)
 import axios from 'axios';
 
+const serviceUrl = process.env.REACT_APP_RECIPE_MANAGER_URL;
+
 
 const instance = axios.create({
-  baseURL: "http://localhost:8080", // Ajusta según tu API
+  baseURL: serviceUrl, // Ajusta según tu API
 });
 
 instance.interceptors.request.use(

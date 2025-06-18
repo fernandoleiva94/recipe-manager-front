@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { Card, Button, Spin, message } from "antd";
-import axios from "axios";
+import axiosInstance from '../util/SubscriptionsAxios';
 
 
 export const createPayment = async (plan, userId) => {
   try {
-    const response = await axios.post("http://localhost:8083/api/mp/pay", {
+    const response = await axiosInstance.post("/api/mp/pay", {
       title: plan.name,
       price: plan.price,
       planId: plan.id,
@@ -23,8 +23,8 @@ const AvailablePlans = () => {
 
   const fetchPlans = async () => {
     try {
-      const response = await axios.get("http://localhost:8083/api/plans/system/1", {
-    
+      const response = await 
+      axiosInstance.get("/api/plans/system/1", {    
       });
       setPlans(response.data);
     } catch (error) {
